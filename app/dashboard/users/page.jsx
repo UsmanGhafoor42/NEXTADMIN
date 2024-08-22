@@ -1,9 +1,13 @@
+import styles from '@/app/ui/dashboard/users/users.module.css'
+
 const Users = () => {
   return (
-    <div>
+    <div className={styles.container}>
       
     </div>
   )
 }
 
+
 export default Users
+        
