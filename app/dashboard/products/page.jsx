@@ -5,12 +5,12 @@ import Image from "next/image";
 import Pagination from "../../ui/dashboard/pagination/pagination.jsx";
 import { searchParams } from "next/navigation";
 import { fetchProducts } from "../../lib/data.js";
+import { deleteProduct } from "../../lib/actions";
 
 const Products = async ({ searchParams }) => {
     const q = searchParams?.q || "";
     const page = searchParams?.page || 1;
     const { count, products } = await fetchProducts(q, page);
-    console.log(products);
     return (
         <div className={styles.container}>
             <div className={styles.top}>
@@ -45,10 +45,10 @@ const Products = async ({ searchParams }) => {
                                     <span>{product.title}</span>
                                 </div>
                             </td>
-                            <td>{product.description}</td>
-                            <td>{product.price}</td>
+                            <td>{product.desc}</td>
+                            <td>${product.price}</td>
                             <td>
-                                {product.createdAt.toString().splice(4, 16)}
+                                {product.createdAt?.toString().slice(4, 16)}
                             </td>
                             <td>{product.stock}</td>
                             <td>
@@ -62,18 +62,21 @@ const Products = async ({ searchParams }) => {
                                             View
                                         </button>
                                     </Link>
-                                    <button
-                                        className={`${styles.button} ${styles.delete}`}
-                                    >
-                                        Delete
-                                    </button>
+                                    <form action={deleteProduct}>
+                                        <input type="hidden" name="id" value={product.id} />
+                                        <button
+                                            className={`${styles.button} ${styles.delete}`}
+                                        >
+                                            Delete
+                                        </button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>
                     ))}
                 </tbody>
             </table>
-            <Pagination />
+            <Pagination count={count} />
         </div>
     );
 };
