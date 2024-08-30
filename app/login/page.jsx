@@ -1,12 +1,13 @@
 import styles from '../ui/login/login.module.css'
+import {authenticate} from "../lib/actions"
 
 const LoginPage = () => {
   return (
     <div className={styles.container}>
-      <form className={styles.form}>
+      <form action={authenticate} className={styles.form}>
         <h1>Login</h1>
-        <input type="text" placeholder="Username" />
-        <input type="password" placeholder="**********" />
+        <input type="text" placeholder="Username" name='username'/>
+        <input type="password" placeholder="**********" name='password' />
         <button>Login</button>
       </form>
     </div>

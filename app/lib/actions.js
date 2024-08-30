@@ -1,13 +1,13 @@
-"use server"
+"use server";
 
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { User, Product } from "../lib/models";
 import { connectToDB } from "../lib/utils";
 import bcrypt from "bcrypt";
+import { signIn } from "../auth";
 
 export const addUser = async (formData) => {
-    
     const { username, email, password, phone, address, isAdmin, isActive } =
         Object.fromEntries(formData);
     try {
@@ -32,26 +32,25 @@ export const addUser = async (formData) => {
     redirect("/dashboard/users");
 };
 export const updateUser = async (formData) => {
-    
     const { id, username, email, password, phone, address, isAdmin, isActive } =
         Object.fromEntries(formData);
     try {
         connectToDB();
-        const updateFields={
+        const updateFields = {
             username,
             email,
             password,
             phone,
             address,
             isAdmin,
-            isActive
-        }
+            isActive,
+        };
         Object.keys(updateFields).forEach(
             (key) =>
-              (updateFields[key] === "" || undefined) && delete updateFields[key]
-          );
-        await User.findByIdAndUpdate(id,updateFields)
-        
+                (updateFields[key] === "" || undefined) &&
+                delete updateFields[key]
+        );
+        await User.findByIdAndUpdate(id, updateFields);
     } catch (err) {
         console.log(err);
         throw new Error("Failed to update User!");
@@ -61,11 +60,10 @@ export const updateUser = async (formData) => {
 };
 export const addProduct = async (formData) => {
     console.log("formData: ", formData);
-    
+
     const { title, desc, price, stock, color, size, category } =
         Object.fromEntries(formData);
 
-    
     try {
         connectToDB();
         const newProduct = new Product({
@@ -86,14 +84,12 @@ export const addProduct = async (formData) => {
     redirect("/dashboard/products");
 };
 
-
 export const updateProduct = async (formData) => {
-    
     const { id, title, desc, price, stock, color, size, category } =
         Object.fromEntries(formData);
     try {
         connectToDB();
-        const updateFields={
+        const updateFields = {
             title,
             desc,
             price,
@@ -101,13 +97,13 @@ export const updateProduct = async (formData) => {
             color,
             size,
             category,
-        }
+        };
         Object.keys(updateFields).forEach(
             (key) =>
-              (updateFields[key] === "" || undefined) && delete updateFields[key]
-          );
-        await Product.findByIdAndUpdate(id,updateFields)
-        
+                (updateFields[key] === "" || undefined) &&
+                delete updateFields[key]
+        );
+        await Product.findByIdAndUpdate(id, updateFields);
     } catch (err) {
         console.log(err);
         throw new Error("Failed to update Product!");
@@ -117,11 +113,10 @@ export const updateProduct = async (formData) => {
 };
 
 export const deleteProduct = async (formData) => {
-    const {id} =
-        Object.fromEntries(formData);
+    const { id } = Object.fromEntries(formData);
     try {
         connectToDB();
-       
+
         await Product.findByIdAndDelete(id);
     } catch (err) {
         console.log(err);
@@ -130,15 +125,25 @@ export const deleteProduct = async (formData) => {
     revalidatePath("/dashboard/products");
 };
 export const deleteUser = async (formData) => {
-    const {id} =
-        Object.fromEntries(formData);
+    const { id } = Object.fromEntries(formData);
     try {
         connectToDB();
-       
+
         await User.findByIdAndDelete(id);
     } catch (err) {
         console.log(err);
         throw new Error("Failed to Delete User!");
     }
     revalidatePath("/dashboard/users");
+};
+
+export const authenticate = async (formData) => {
+    const { username, password } = Object.fromEntries(formData);
+    console.log("formData: ", formData);
+    try {
+        await signIn("credentials", { username, password });
+    } catch (err) {
+        console.error("Authentication error details:", err);
+        throw new Error("Failed to Authenticate!");
+    }
 };
