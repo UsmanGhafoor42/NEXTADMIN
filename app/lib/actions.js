@@ -137,30 +137,15 @@ export const deleteUser = async (formData) => {
     revalidatePath("/dashboard/users");
 };
 
-// export const authenticate = async (formData) => {
-//     const { username, password } = Object.fromEntries(formData);
-//     console.log("formData: ", formData);
-//     try {
-//         const result = await signIn("credentials", { username, password });
-//         if (!result || result.error) { // Check for error in the result
-//             throw new Error(result.error || "Failed to Authenticate!");
-//         }
-//         // Optionally, redirect or update state here if login is successful
-//     } catch (err) {
-//         console.error("Authentication error details:", err);
-//         throw new Error("Failed to Authenticate!");
-//     }
-// };
-
 export const authenticate = async (prevState, formData) => {
     const { username, password } = Object.fromEntries(formData);
-  
+
     try {
-      await signIn("credentials", { username, password });
+        await signIn("credentials", { username, password });
     } catch (err) {
-      if (err.message.includes("CredentialsSignin")) {
-        return "Wrong Credentials";
-      }
-      throw err;
+        if (err.message.includes("CredentialsSignin")) {
+            return "Wrong Credentials";
+        }
+        throw err;
     }
-  };
+};
