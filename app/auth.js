@@ -40,19 +40,24 @@ export const { signIn, signOut, auth } = NextAuth({
         }),
     ],
     callbacks: {
-        async jwt({ token, user }) {
-            if (user) {
-                token.username = user.username;
-                token.img = user.img;
-            }
+        async jwt({ token }) {
+            if (!token.sub) return token;
+
+            const user = await User.findById(token.sub);
+
+            if (!user) return token;
+
+            token.name = user.username;
+            token.img = user.img;
             return token;
         },
         async session({ session, token }) {
-            if (token) {
-                session.user.username = token.username;
+            if (token.sub && session.user) {
+                session.user.name = token.name;
                 session.user.img = token.img;
             }
             return session;
         },
     },
+    session: { strategy: "jwt" },
 });
